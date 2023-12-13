@@ -73,7 +73,8 @@ export async function getStaticProps() {
       id: metadata.id !== undefined ? metadata.id : null,
       title: metadata.title,
       content: metadata.content,
-      slug: filename.replace(/\.md$/, ''), // Adjust file extension to '.md'
+      const slug = filename.replace(/\.js$/, '');
+
     };
   });
 
