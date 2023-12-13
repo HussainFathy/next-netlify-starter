@@ -6,6 +6,7 @@ import Footer from '@components/Footer';
 import Link from 'next/link';
 
 import path from 'path';
+import fs from 'fs';
 
 const Home = ({ posts }) => {
   return (
