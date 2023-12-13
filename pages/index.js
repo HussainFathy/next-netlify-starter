@@ -4,7 +4,6 @@ import Head from 'next/head';
 import Header from '@components/Header';
 import Footer from '@components/Footer';
 import Link from 'next/link';
-
 import path from 'path';
 import fs from 'fs';
 
@@ -20,7 +19,7 @@ const Home = ({ posts }) => {
 
       <main>
         <h1>Welcome to Your Cybersecurity Blog!</h1>
-        
+
         {/* Display a list of blog posts */}
         <ul>
           {posts.map((post) => (
@@ -42,9 +41,9 @@ const Home = ({ posts }) => {
 };
 
 // Import necessary modules
-const matter = require('gray-matter');
+import matter from 'gray-matter';
 
-// In extractMetadata function
+// Updated extractMetadata function for Markdown files
 function extractMetadata(fileContent) {
   // Use gray-matter to parse frontmatter and content
   const { data, content } = matter(fileContent);
@@ -57,27 +56,25 @@ function extractMetadata(fileContent) {
   };
 }
 
-
 export async function getStaticProps() {
   // Read files from the 'posts' directory and generate blog post data
   const postsDirectory = path.join(process.cwd(), 'pages/posts');
   const filenames = fs.readdirSync(postsDirectory);
 
-const posts = filenames.map((filename) => {
-  const filePath = path.join(postsDirectory, filename);
-  const fileContent = fs.readFileSync(filePath, 'utf8');
+  const posts = filenames.map((filename) => {
+    const filePath = path.join(postsDirectory, filename);
+    const fileContent = fs.readFileSync(filePath, 'utf8');
 
-  // Extract metadata (e.g., title) from the file content
-  const metadata = extractMetadata(fileContent);
+    // Extract metadata (e.g., title) from the file content
+    const metadata = extractMetadata(fileContent);
 
-  return {
-    id: metadata.id !== undefined ? metadata.id : null,
-    title: metadata.title,
-    content: metadata.content,
-    slug: filename.replace(/\.js$/, ''),
-  };
-});
-
+    return {
+      id: metadata.id !== undefined ? metadata.id : null,
+      title: metadata.title,
+      content: metadata.content,
+      slug: filename.replace(/\.md$/, ''), // Adjust file extension to '.md'
+    };
+  });
 
   return {
     props: {
