@@ -41,6 +41,21 @@ const Home = ({ posts }) => {
   );
 };
 
+// Import necessary modules
+const matter = require('gray-matter');
+
+function extractMetadata(fileContent) {
+  // Use gray-matter to parse frontmatter and content
+  const { data, content } = matter(fileContent);
+
+  // Return metadata object
+  return {
+    id: data.id,
+    title: data.title,
+    content: content,
+  };
+}
+
 export async function getStaticProps() {
   // Read files from the 'posts' directory and generate blog post data
   const postsDirectory = path.join(process.cwd(), 'pages/posts');
@@ -60,6 +75,10 @@ export async function getStaticProps() {
       slug: filename.replace(/\.js$/, ''),
     };
   });
+
+  // Rest of your code...
+}
+
 
   return {
     props: {
