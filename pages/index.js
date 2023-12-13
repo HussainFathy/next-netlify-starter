@@ -8,6 +8,12 @@ import path from 'path';
 import fs from 'fs';
 
 const Home = ({ posts }) => {
+   const [selectedPostContent, setSelectedPostContent] = useState(null);
+
+  // Function to handle post click
+  const handlePostClick = (content) => {
+    setSelectedPostContent(content);
+  };
   return (
     <div className="container">
       <Head>
@@ -24,12 +30,8 @@ const Home = ({ posts }) => {
         <ul>
           {posts.map((post) => (
             <li key={post.id}>
-              <Link href={`/posts/${post.slug}`}>
-                <a>
-                  <h2>{post.title}</h2>
-                </a>
-              </Link>
-              <p>{post.content}</p>
+              <h2 onClick={() => handlePostClick(post.content)}>{post.title}</h2>
+              {selectedPostContent === post.content && <p>{post.content}</p>}
             </li>
           ))}
         </ul>
