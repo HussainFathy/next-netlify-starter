@@ -1,5 +1,4 @@
-// pages/index.js
-
+import React, { useState } from 'react';
 import Head from 'next/head';
 import Header from '@components/Header';
 import Footer from '@components/Footer';
@@ -8,12 +7,14 @@ import path from 'path';
 import fs from 'fs';
 
 const Home = ({ posts }) => {
-   const [selectedPostContent, setSelectedPostContent] = useState(null);
+  // State to track the selected post content
+  const [selectedPostContent, setSelectedPostContent] = useState(null);
 
   // Function to handle post click
   const handlePostClick = (content) => {
     setSelectedPostContent(content);
   };
+
   return (
     <div className="container">
       <Head>
@@ -52,11 +53,10 @@ function extractMetadata(fileContent) {
 
   // Return metadata object
   return {
-  id: data.id || null,
-  title: data.title || '', // Default to an empty string if undefined
-  content: content,
-};
-
+    id: data.id || null,
+    title: data.title || '',
+    content: content,
+  };
 }
 
 export async function getStaticProps() {
@@ -88,7 +88,5 @@ export async function getStaticProps() {
     },
   };
 }
-
-
 
 export default Home;
