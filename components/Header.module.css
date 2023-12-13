@@ -1,21 +1,27 @@
 /* components/Header.module.css */
 
+nav {
+  display: flex;
+  justify-content: space-between;
+}
+
 .responsiveDivTop {
-  float: left;
+  order: 1;
 }
 
 .responsiveDivBottom {
-  float: right;
+  order: 2;
 }
 
 @media (max-width: 480px) {
-  .responsiveDivTop {
-    text-align: center;
-    float: left;
+  nav {
+    flex-direction: column;
+    align-items: center;
   }
 
+  .responsiveDivTop,
   .responsiveDivBottom {
-    text-align: center;
-    float: left;
+    order: 0; /* Reset the order for small screens */
+    margin-bottom: 10px; /* Add some space between the two divs on small screens */
   }
 }
