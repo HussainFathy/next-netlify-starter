@@ -44,17 +44,19 @@ const Home = ({ posts }) => {
 // Import necessary modules
 const matter = require('gray-matter');
 
+// In extractMetadata function
 function extractMetadata(fileContent) {
   // Use gray-matter to parse frontmatter and content
   const { data, content } = matter(fileContent);
 
   // Return metadata object
   return {
-    id: data.id,
+    id: data.id || null, // Ensure that data.id is defined or use null
     title: data.title,
     content: content,
   };
 }
+
 
 export async function getStaticProps() {
   // Read files from the 'posts' directory and generate blog post data
