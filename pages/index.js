@@ -69,12 +69,14 @@ export async function getStaticProps() {
     // Extract metadata (e.g., title) from the file content
     const metadata = extractMetadata(fileContent);
 
+    // Move the line outside of the return object and set the slug property
+    const slug = filename.replace(/\.js$/, '');
+
     return {
       id: metadata.id !== undefined ? metadata.id : null,
       title: metadata.title,
       content: metadata.content,
-      const slug = filename.replace(/\.js$/, '');
-
+      slug: slug, // Set the slug property
     };
   });
 
@@ -84,5 +86,7 @@ export async function getStaticProps() {
     },
   };
 }
+
+
 
 export default Home;
