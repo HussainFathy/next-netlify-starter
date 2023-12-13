@@ -13,7 +13,7 @@ const Post = ({ post }) => {
   );
 };
 
-// pages/posts/[slug].js
+
 
 export async function getStaticPaths() {
   const postsDirectory = path.join(process.cwd(), 'pages/posts');
@@ -21,12 +21,13 @@ export async function getStaticPaths() {
 
   const paths = filenames.map((filename) => {
     // Remove the file extension and use it as the slug
-    const slug = filename.replace(/\.js$/, '');
+    const slug = filename.replace(/\.md$/, '');
     return { params: { slug } };
   });
 
   return { paths, fallback: false };
 }
+
 
 
 
