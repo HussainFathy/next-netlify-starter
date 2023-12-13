@@ -31,11 +31,10 @@ export async function getStaticPaths() {
 
 
 
-
 export async function getStaticProps({ params }) {
   const { slug } = params;
   const filePath = path.join(process.cwd(), 'pages/posts', `${slug}.md`);
-  
+
   try {
     const fileContent = fs.readFileSync(filePath, 'utf8');
     const { data, content } = matter(fileContent);
@@ -56,6 +55,8 @@ export async function getStaticProps({ params }) {
     };
   }
 }
+
+export default Post;
 
 
 
