@@ -70,7 +70,7 @@ export async function getStaticProps() {
     const metadata = extractMetadata(fileContent);
 
     // Move the line outside of the return object and set the slug property
-    const slug = filename.replace(/\.js$/, '');
+    const slug = filename.replace(/\.md$/, '');
 
     return {
       id: metadata.id !== undefined ? metadata.id : null,
