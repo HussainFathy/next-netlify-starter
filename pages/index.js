@@ -68,15 +68,13 @@ export async function getStaticProps() {
     // Extract metadata (e.g., title) from the file content
     const metadata = extractMetadata(fileContent);
 
-  return {
-      id: metadata.id,
+    return {
+      id: metadata.id, // Make sure metadata.id is defined
       title: metadata.title,
       content: metadata.content,
       slug: filename.replace(/\.js$/, ''),
     };
   });
-
-
 
   return {
     props: {
@@ -84,4 +82,5 @@ export async function getStaticProps() {
     },
   };
 }
+
 export default Home;
