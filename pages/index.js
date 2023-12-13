@@ -1,44 +1,26 @@
-// Import necessary components and modules
-import Head from 'next/head'
-import Header from '@components/Header'
-import Footer from '@components/Footer'
+// pages/index.js
 
-// Sample blog posts data
-const blogPosts = [
-  {
-    id: 1,
-    title: 'My First Blog Post',
-    content: 'This is the content of my first blog post. Welcome to my blog!',
-  },
-  {
-    id: 2,
-    title: 'Another Blog Post',
-    content: 'Here is another interesting blog post. Hope you enjoy reading!',
-  },
-  // Add more blog posts as needed
-];
+import Head from 'next/head';
+import Header from '@components/Header';
+import Footer from '@components/Footer';
 
-export default function Home() {
+const Home = () => {
   return (
     <div className="container">
       <Head>
-        <title>Your Personal Blog</title>
+        <title>Your Cybersecurity Blog</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
-        <Header title="Your Personal Blog" />
+      <Header />
 
-        {/* Display a list of blog posts */}
-        {blogPosts.map((post) => (
-          <div key={post.id}>
-            <h2>{post.title}</h2>
-            <p>{post.content}</p>
-          </div>
-        ))}
+      <main>
+        {/* Your blog content goes here */}
       </main>
 
       <Footer />
     </div>
-  )
-}
+  );
+};
+
+export default Home;
