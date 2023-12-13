@@ -13,7 +13,7 @@ const Home = ({ posts }) => {
   return (
     <div className="container">
       <Head>
-        <title>Your Cybersecurity Blog</title>
+        <title>0xSphinx</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
