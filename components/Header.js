@@ -5,7 +5,7 @@ import styles from './Header.module.css';
 
 const Header = () => {
   return (
-    <header>
+    <header style="width: 100%;">
       <nav className={styles.headerNav}>
         <div className={styles.responsiveDivTop}>
           <Link href="/">
