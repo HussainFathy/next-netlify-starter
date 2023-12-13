@@ -1,46 +1,39 @@
 // components/Header.js
 
 import Link from 'next/link';
+import styles from './Header.module.css';
 
 const Header = () => {
   return (
     <header>
       <nav>
-        <ul>
-          <li>
-            <Link href="/">
-              <a>Home</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/whoami">
-              <a>Whoami</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/cve">
-              <a>CVE</a>
-            </Link>
-          </li>
-        </ul>
-        <ul className="external-links">
-          <li>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer">
-              GitHub
-            </a>
-          </li>
-          <li>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-              Linkedin
-            </a>
-          </li>
-          <li>
-            <a href="mailto:your@email.com">
-              Email
-            </a>
-          </li>
-        </ul>
+        <div className={styles.responsiveDivTop}>
+          <Link href="/">
+            <a><b>Home</b></a>
+          </Link>
+          |
+          <Link href="/whoami">
+            <a><b>Whoami</b></a>
+          </Link>
+          |
+          <Link href="/posts">
+            <a><b>Posts</b></a>
+          </Link>
+          |
+          <Link href="/cve">
+            <a><b>CVE</b></a>
+          </Link>
+        </div>
+        <div className={styles.responsiveDivBottom}>
+          Links:
+          <a href="https://github.com/0xless">GitHub</a>
+          |
+          <a href="https://www.linkedin.com/in/matteo-cosentino/">Linkedin</a>
+          |
+          <a href="mailto:contact@lessonsec.com">Email</a>
+        </div>
       </nav>
+      <hr />
     </header>
   );
 };
