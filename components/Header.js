@@ -6,7 +6,7 @@ import styles from './Header.module.css';
 const Header = () => {
   return (
     <header>
-      <nav>
+      <nav className={styles.headerNav}>
         <div className={styles.responsiveDivTop}>
           <Link href="/">
             <a><b>Home</b></a>
