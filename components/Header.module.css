@@ -5,7 +5,7 @@
 }
 
 .responsiveDivBottom {
-  text-align: right;
+  float: right;
 }
 
 @media (max-width: 480px) {
