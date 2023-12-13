@@ -50,10 +50,11 @@ function extractMetadata(fileContent) {
 
   // Return metadata object
   return {
-    id: data.id || null, // Ensure that data.id is defined or use null
-    title: data.title,
-    content: content,
-  };
+  id: data.id || null,
+  title: data.title || '', // Default to an empty string if undefined
+  content: content,
+};
+
 }
 
 export async function getStaticProps() {
