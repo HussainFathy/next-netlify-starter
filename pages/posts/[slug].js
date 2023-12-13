@@ -34,22 +34,29 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   const { slug } = params;
-  const filePath = path.join(process.cwd(), 'pages/posts', `1.md`);
-  const fileContent = fs.readFileSync(filePath, 'utf8');
+  const filePath = path.join(process.cwd(), 'pages/posts', `${slug}.md`);
+  
+  try {
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const { data, content } = matter(fileContent);
 
-  // Extract metadata (e.g., title) from the file content
-  const { data, content } = matter(fileContent);
-
-  return {
-    props: {
-      post: {
-        id: data.id,
-        title: data.title,
-        content: content,
+    return {
+      props: {
+        post: {
+          id: data.id,
+          title: data.title,
+          content: content,
+        },
       },
-    },
-  };
+    };
+  } catch (error) {
+    console.error(`Error reading file ${filePath}:`, error);
+    return {
+      notFound: true,
+    };
+  }
 }
+
 
 
 
