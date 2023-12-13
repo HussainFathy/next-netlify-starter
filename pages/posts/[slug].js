@@ -34,7 +34,7 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   const { slug } = params;
-  const filePath = path.join(process.cwd(), 'pages/posts', `${slug}.md`);
+  const filePath = path.join(process.cwd(), 'pages/posts', `1.md`);
   const fileContent = fs.readFileSync(filePath, 'utf8');
 
   // Extract metadata (e.g., title) from the file content
