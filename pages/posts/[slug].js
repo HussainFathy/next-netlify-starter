@@ -27,6 +27,7 @@ export async function getStaticPaths() {
 }
 
 
+
 export async function getStaticProps({ params }) {
   const { slug } = params;
   const filePath = path.join(process.cwd(), 'pages/posts', `${slug}.md`);
