@@ -1,0 +1,20 @@
+/* components/Header.module.css */
+
+.responsiveDivTop {
+  float: left;
+}
+
+.responsiveDivBottom {
+  text-align: right;
+}
+
+@media (max-width: 480px) {
+  .responsiveDivTop {
+    text-align: center;
+    float: none;
+  }
+
+  .responsiveDivBottom {
+    text-align: center;
+  }
+}
