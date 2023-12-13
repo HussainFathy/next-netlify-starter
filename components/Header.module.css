@@ -1,6 +1,6 @@
 /* components/Header.module.css */
 
-nav {
+.headerNav {
   display: flex;
   justify-content: space-between;
 }
@@ -14,14 +14,14 @@ nav {
 }
 
 @media (max-width: 480px) {
-  nav {
+  .headerNav {
     flex-direction: column;
     align-items: center;
   }
 
   .responsiveDivTop,
   .responsiveDivBottom {
-    order: 0; /* Reset the order for small screens */
-    margin-bottom: 10px; /* Add some space between the two divs on small screens */
+    order: 0;
+    margin-bottom: 10px;
   }
 }
