@@ -19,12 +19,15 @@ export async function getStaticPaths() {
   const postsDirectory = path.join(process.cwd(), 'pages/posts');
   const filenames = fs.readdirSync(postsDirectory);
 
-  const paths = filenames.map((filename) => ({
-    params: { slug: filename.replace(/\.js$/, '') },
-  }));
+  const paths = filenames.map((filename) => {
+    // Remove the file extension and use it as the slug
+    const slug = filename.replace(/\.js$/, '');
+    return { params: { slug } };
+  });
 
   return { paths, fallback: false };
 }
+
 
 
 
