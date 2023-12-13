@@ -63,20 +63,21 @@ export async function getStaticProps() {
   const postsDirectory = path.join(process.cwd(), 'pages/posts');
   const filenames = fs.readdirSync(postsDirectory);
 
-  const posts = filenames.map((filename) => {
-    const filePath = path.join(postsDirectory, filename);
-    const fileContent = fs.readFileSync(filePath, 'utf8');
+const posts = filenames.map((filename) => {
+  const filePath = path.join(postsDirectory, filename);
+  const fileContent = fs.readFileSync(filePath, 'utf8');
 
-    // Extract metadata (e.g., title) from the file content
-    const metadata = extractMetadata(fileContent);
+  // Extract metadata (e.g., title) from the file content
+  const metadata = extractMetadata(fileContent);
 
-    return {
-      id: metadata.id, // Make sure metadata.id is defined
-      title: metadata.title,
-      content: metadata.content,
-      slug: filename.replace(/\.js$/, ''),
-    };
-  });
+  return {
+    id: metadata.id !== undefined ? metadata.id : null,
+    title: metadata.title,
+    content: metadata.content,
+    slug: filename.replace(/\.js$/, ''),
+  };
+});
+
 
   return {
     props: {
