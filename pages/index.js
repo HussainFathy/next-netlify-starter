@@ -68,7 +68,7 @@ export async function getStaticProps() {
     // Extract metadata (e.g., title) from the file content
     const metadata = extractMetadata(fileContent);
 
-    return {
+  return {
       id: metadata.id,
       title: metadata.title,
       content: metadata.content,
@@ -76,8 +76,6 @@ export async function getStaticProps() {
     };
   });
 
-  // Rest of your code...
-}
 
 
   return {
@@ -86,5 +84,4 @@ export async function getStaticProps() {
     },
   };
 }
-
 export default Home;
