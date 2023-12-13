@@ -3,23 +3,9 @@
 import Head from 'next/head';
 import Header from '@components/Header';
 import Footer from '@components/Footer';
+import Link from 'next/link';
 
-const Home = () => {
-  // Sample blog posts data
-  const blogPosts = [
-    {
-      id: 1,
-      title: 'Introduction to Cybersecurity',
-      content: 'This is an introduction to the exciting world of cybersecurity.',
-    },
-    {
-      id: 2,
-      title: 'Securing Your Online Presence',
-      content: 'Learn essential tips to secure your online accounts and data.',
-    },
-    // Add more blog posts as needed
-  ];
-
+const Home = ({ posts }) => {
   return (
     <div className="container">
       <Head>
@@ -34,9 +20,13 @@ const Home = () => {
         
         {/* Display a list of blog posts */}
         <ul>
-          {blogPosts.map((post) => (
+          {posts.map((post) => (
             <li key={post.id}>
-              <h2>{post.title}</h2>
+              <Link href={`/posts/${post.slug}`}>
+                <a>
+                  <h2>{post.title}</h2>
+                </a>
+              </Link>
               <p>{post.content}</p>
             </li>
           ))}
@@ -47,5 +37,32 @@ const Home = () => {
     </div>
   );
 };
+
+export async function getStaticProps() {
+  // Read files from the 'posts' directory and generate blog post data
+  const postsDirectory = path.join(process.cwd(), 'pages/posts');
+  const filenames = fs.readdirSync(postsDirectory);
+
+  const posts = filenames.map((filename) => {
+    const filePath = path.join(postsDirectory, filename);
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+
+    // Extract metadata (e.g., title) from the file content
+    const metadata = extractMetadata(fileContent);
+
+    return {
+      id: metadata.id,
+      title: metadata.title,
+      content: metadata.content,
+      slug: filename.replace(/\.js$/, ''),
+    };
+  });
+
+  return {
+    props: {
+      posts,
+    },
+  };
+}
 
 export default Home;
