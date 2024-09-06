@@ -158,5 +158,5 @@ components:
 x-ibm-configuration:
   properties:
     target-url:
-      value: "https://api.globalbank.com/accounts"
+      value: "https://raw.githubusercontent.com/HussainFathy/next-netlify-starter/main/data.json"
       description: URL of the 
