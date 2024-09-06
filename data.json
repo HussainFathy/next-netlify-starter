@@ -1,52 +1,7 @@
 {
-  "accounts": [
-    {
-      "account_number": "1234567890",
-      "account_type": "CHECKING",
-      "currency": "USD",
-      "balance": 1200.50,
-      "transactions": [
-        {
-          "transaction_id": "TRX123456",
-          "date": "2023-01-15T10:30:00Z",
-          "description": "Payment to ABC Retail",
-          "amount": -100.00,
-          "balance_after": 1100.50,
-          "currency": "USD"
-        },
-        {
-          "transaction_id": "TRX123457",
-          "date": "2023-01-18T14:50:00Z",
-          "description": "Deposit",
-          "amount": 500.00,
-          "balance_after": 1600.50,
-          "currency": "USD"
-        }
-      ]
-    },
-    {
       "account_number": "0987654321",
       "account_type": "SAVINGS",
       "currency": "USD",
-      "balance": 2500.75,
-      "transactions": [
-        {
-          "transaction_id": "TRX223344",
-          "date": "2023-02-10T12:00:00Z",
-          "description": "Transfer from Checking",
-          "amount": 1000.00,
-          "balance_after": 3500.75,
-          "currency": "USD"
-        },
-        {
-          "transaction_id": "TRX223345",
-          "date": "2023-02-15T16:45:00Z",
-          "description": "Withdrawal",
-          "amount": -500.00,
-          "balance_after": 3000.75,
-          "currency": "USD"
-        }
-      ]
-    }
-  ]
+      "balance": 2500.75
 }
+
