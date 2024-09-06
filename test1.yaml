@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: Account Management and Transaction History
-  description: Provides secure access to customer account balances and transaction history.
+  description: Provides secure access to account balances and transaction history for customers.
   termsOfService: https://globalbank.com/terms
   contact:
     name: GlobalBank Support
@@ -9,89 +9,75 @@ info:
   version: 1.0.0
   x-bank-name: globalbank-api
 externalDocs:
-  description: "Documentation for this API containing examples and usage instructions."
+  description: API Documentation
   url: https://globalbank.com/docs/api
 servers:
 - url: /banking
 security:
-- clientID: []
+- OAuth2: []
 paths:
-  /accounts/{accountNumber}:
+  /accounts:
     get:
-      summary: Retrieve account details and balance.
-      parameters:
-      - name: accountNumber
-        in: path
-        description: Account number to lookup.
-        required: true
-        schema:
-          type: string
+      summary: Retrieve list of all accounts for a customer
+      security:
+      - OAuth2: [read]
       responses:
         "200":
-          description: Account found successfully.
+          description: Successful retrieval of accounts
           content:
             application/json:
               schema:
-                title: Account Details
-                type: object
-                properties:
-                  account_number:
-                    title: Account Number
-                    type: string
-                    example: ACC12345678
-                  balance:
-                    title: Balance
-                    type: number
-                    format: float
-                    example: 2500.75
-                  currency:
-                    title: Currency
-                    type: string
-                    example: USD
-                  account_type:
-                    title: Account Type
-                    type: string
-                    enum:
-                    - CHECKING
-                    - SAVINGS
-                    - CREDIT
-                  status:
-                    title: Account Status
-                    type: string
-                    enum:
-                    - ACTIVE
-                    - INACTIVE
-                  opened_at:
-                    title: Date Opened
-                    type: string
-                    format: date-time
-  /accounts/{accountNumber}/transactions:
+                title: Accounts
+                type: array
+                items:
+                  type: object
+                  properties:
+                    account_number:
+                      type: string
+                      example: 1234567890
+                    account_type:
+                      type: string
+                      enum:
+                      - Checking
+                      - Savings
+                      - Credit Card
+                      example: Checking
+                    balance:
+                      type: number
+                      format: float
+                      example: 1500.50
+                    currency:
+                      type: string
+                      example: USD
+        "401":
+          description: Unauthorized - Invalid or expired OAuth2 token
+  /accounts/{account_number}/transactions:
     get:
-      summary: Retrieve the transaction history for a specific account.
+      summary: Retrieve transaction history for a specific account within a date range
       parameters:
-      - name: accountNumber
+      - name: account_number
         in: path
-        description: Account number to lookup.
+        description: The unique identifier for the account
         required: true
         schema:
           type: string
-      - name: startDate
+      - name: start_date
         in: query
-        description: Start date for transaction history in YYYY-MM-DD format.
+        description: The start date for the transaction history in YYYY-MM-DD format
         required: true
         schema:
           type: string
           format: date
-      - name: endDate
+      - name: end_date
         in: query
-        description: End date for transaction history in YYYY-MM-DD format.
+        description: The end date for the transaction history in YYYY-MM-DD format
         required: true
         schema:
           type: string
           format: date
       responses:
         "200":
-          description: Transaction history found successfully.
+          description: Transaction history retrieved successfully
           content:
             application/json:
               schema:
@@ -101,42 +87,80 @@ paths:
                   type: object
                   properties:
                     transaction_id:
-                      title: Transaction ID
                       type: string
                       example: TX123456789
                     date:
-                      title: Transaction Date
                       type: string
                       format: date-time
                       example: 2024-09-01T10:30:00Z
                     amount:
-                      title: Transaction Amount
                       type: number
                       format: float
-                      example: -150.00
+                      example: -120.00
                     currency:
-                      title: Currency
                       type: string
                       example: USD
                     description:
-                      title: Transaction Description
                       type: string
                       example: Grocery Store Purchase
                     category:
-                      title: Transaction Category
                       type: string
                       example: Food & Drink
+        "400":
+          description: Bad Request - Invalid date format or missing required parameters
+        "401":
+          description: Unauthorized - Invalid or expired OAuth2 token
+        "404":
+          description: Account not found
+  /accounts/{account_number}/balance:
+    get:
+      summary: Retrieve current account balance
+      parameters:
+      - name: account_number
+        in: path
+        description: The unique identifier for the account
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Account balance retrieved successfully
+          content:
+            application/json:
+              schema:
+                title: Account Balance
+                type: object
+                properties:
+                  account_number:
+                    type: string
+                    example: 1234567890
+                  balance:
+                    type: number
+                    format: float
+                    example: 3200.75
+                  currency:
+                    type: string
+                    example: USD
+        "401":
+          description: Unauthorized - Invalid or expired OAuth2 token
+        "404":
+          description: Account not found
 components:
   securitySchemes:
-    clientID:
-      type: apiKey
-      name: X-IBM-Client-Id
-      in: header
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.globalbank.com/oauth2/authorize
+          tokenUrl: https://auth.globalbank.com/oauth2/token
+          scopes:
+            read: Grants read access to account data
+            write: Grants write access to account data
 x-ibm-configuration:
   properties:
     target-url:
-      value: "https://api.globalbank.com/banking/accounts/{accountNumber}"
-      description: URL of the proxy policy.
+      value: "https://api.globalbank.com/accounts"
+      description: URL of the proxy policy
       encoded: false
   cors:
     enabled: true
@@ -145,65 +169,7 @@ x-ibm-configuration:
   phase: realized
   enforced: true
   testable: true
-  assembly:
-    execute:
-    - invoke:
-        title: account lookup
-        version: 1.0.0
-        verb: keep
-        target-url: $(target-url)
-        follow-redirects: false
-        timeout: 60
-        parameter-control:
-          type: blocklist
-          values: []
-        header-control:
-          type: blocklist
-          values: []
-        inject-proxy-headers: true
-        persistent-connection: true
-        backend-type: json
-        output: account
-        description: Retrieves account data from the banking system using the provided account number.
-    - parse:
-        version: 2.1.0
-        title: parse response
-        parse-settings-reference:
-          default: apic-default-parsesettings
-        input: account
-        output: account
-        description: Parse the JSON from the banking system for account details.
-    - map:
-        version: 2.0.0
-        title: map input to lambda
-        inputs:
-          input:
-            schema:
-              type: object
-              properties:
-                transaction_id:
-                  type: string
-                  name: transaction_id
-                date:
-                  type: string
-                  name: date
-            variable: account.body
-        outputs:
-          output:
-            schema:
-              type: object
-              properties:
-                transaction_date:
-                  type: string
-                  name: transaction_date
-            variable: message.body
-            content: application/json
-        actions:
-        - set: output.transaction_date
-          from: input.date
-    finally: []
   activity-log:
     enabled: true
     success-content: activity
     error-content: payload
-x-original-swagger-version: "2.0"
