@@ -1,0 +1,209 @@
+openapi: 3.0.1
+info:
+  title: Account Management and Transaction History
+  description: Provides secure access to customer account balances and transaction history.
+  termsOfService: https://globalbank.com/terms
+  contact:
+    name: GlobalBank Support
+    url: https://globalbank.com/contact
+  version: 1.0.0
+  x-bank-name: globalbank-api
+externalDocs:
+  description: "Documentation for this API containing examples and usage instructions."
+  url: https://globalbank.com/docs/api
+servers:
+- url: /banking
+security:
+- clientID: []
+paths:
+  /accounts/{accountNumber}:
+    get:
+      summary: Retrieve account details and balance.
+      parameters:
+      - name: accountNumber
+        in: path
+        description: Account number to lookup.
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Account found successfully.
+          content:
+            application/json:
+              schema:
+                title: Account Details
+                type: object
+                properties:
+                  account_number:
+                    title: Account Number
+                    type: string
+                    example: ACC12345678
+                  balance:
+                    title: Balance
+                    type: number
+                    format: float
+                    example: 2500.75
+                  currency:
+                    title: Currency
+                    type: string
+                    example: USD
+                  account_type:
+                    title: Account Type
+                    type: string
+                    enum:
+                    - CHECKING
+                    - SAVINGS
+                    - CREDIT
+                  status:
+                    title: Account Status
+                    type: string
+                    enum:
+                    - ACTIVE
+                    - INACTIVE
+                  opened_at:
+                    title: Date Opened
+                    type: string
+                    format: date-time
+  /accounts/{accountNumber}/transactions:
+    get:
+      summary: Retrieve the transaction history for a specific account.
+      parameters:
+      - name: accountNumber
+        in: path
+        description: Account number to lookup.
+        required: true
+        schema:
+          type: string
+      - name: startDate
+        in: query
+        description: Start date for transaction history in YYYY-MM-DD format.
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: endDate
+        in: query
+        description: End date for transaction history in YYYY-MM-DD format.
+        required: true
+        schema:
+          type: string
+          format: date
+      responses:
+        "200":
+          description: Transaction history found successfully.
+          content:
+            application/json:
+              schema:
+                title: Transaction History
+                type: array
+                items:
+                  type: object
+                  properties:
+                    transaction_id:
+                      title: Transaction ID
+                      type: string
+                      example: TX123456789
+                    date:
+                      title: Transaction Date
+                      type: string
+                      format: date-time
+                      example: 2024-09-01T10:30:00Z
+                    amount:
+                      title: Transaction Amount
+                      type: number
+                      format: float
+                      example: -150.00
+                    currency:
+                      title: Currency
+                      type: string
+                      example: USD
+                    description:
+                      title: Transaction Description
+                      type: string
+                      example: Grocery Store Purchase
+                    category:
+                      title: Transaction Category
+                      type: string
+                      example: Food & Drink
+components:
+  securitySchemes:
+    clientID:
+      type: apiKey
+      name: X-Client-Id
+      in: header
+x-ibm-configuration:
+  properties:
+    target-url:
+      value: "https://api.globalbank.com/banking/accounts/{accountNumber}"
+      description: URL of the proxy policy.
+      encoded: false
+  cors:
+    enabled: true
+  gateway: datapower-api-gateway
+  type: rest
+  phase: realized
+  enforced: true
+  testable: true
+  assembly:
+    execute:
+    - invoke:
+        title: account lookup
+        version: 1.0.0
+        verb: keep
+        target-url: $(target-url)
+        follow-redirects: false
+        timeout: 60
+        parameter-control:
+          type: blocklist
+          values: []
+        header-control:
+          type: blocklist
+          values: []
+        inject-proxy-headers: true
+        persistent-connection: true
+        backend-type: json
+        output: account
+        description: Retrieves account data from the banking system using the provided account number.
+    - parse:
+        version: 2.1.0
+        title: parse response
+        parse-settings-reference:
+          default: apic-default-parsesettings
+        input: account
+        output: account
+        description: Parse the JSON from the banking system for account details.
+    - map:
+        version: 2.0.0
+        title: map input to lambda
+        inputs:
+          input:
+            schema:
+              type: object
+              properties:
+                transaction_id:
+                  type: string
+                  name: transaction_id
+                date:
+                  type: string
+                  name: date
+            variable: account.body
+        outputs:
+          output:
+            schema:
+              type: object
+              properties:
+                transaction_date:
+                  type: string
+                  name: transaction_date
+            variable: message.body
+            content: application/json
+        actions:
+        - set: output.transaction_date
+          from: input.date
+    finally: []
+  activity-log:
+    enabled: true
+    success-content: activity
+    error-content: payload
+x-original-swagger-version: "2.0"
