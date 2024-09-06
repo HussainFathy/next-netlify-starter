@@ -1,41 +1,42 @@
 openapi: 3.0.1
 info:
   title: GlobalBank Account API
-  description: API to securely retrieve customer account details, balances, and transaction history.
-  termsOfService: https://www.globalbank.com/terms
+  description: Securely view account balances and transaction history for GlobalBank customers.
+  termsOfService: https://github.com/globalbank/api-terms
   contact:
-    name: GlobalBank Support
-    url: https://www.globalbank.com/support
+    name: GlobalBank Corporation
+    url: https://www.globalbank.com/products/api-connect
   version: 1.0.0
   x-ibm-name: globalbank-account-api
 externalDocs:
-  description: GlobalBank API Documentation
-  url: https://www.globalbank.com/api-docs
+  description: "Github project for this API, containing source code and deployment pipeline"
+  url: https://github.com/globalbank/api-docs
 servers:
 - url: /banking/v1
 security:
-- OAuth2: []
+- clientID: []
 paths:
   /accounts:
     get:
-      summary: Retrieve all accounts associated with the authenticated user.
-      security:
-      - OAuth2: []
+      summary: Retrieve the list of accounts associated with the authenticated user.
+      parameters: []
       responses:
         "200":
-          description: List of accounts successfully retrieved
+          description: Accounts successfully retrieved
           content:
             application/json:
               schema:
-                title: Accounts List
+                title: Account List
                 type: array
                 items:
                   type: object
                   properties:
                     account_number:
+                      title: Account Number
                       type: string
-                      example: "123456789"
+                      example: "1234567890"
                     account_type:
+                      title: Account Type
                       type: string
                       enum:
                         - CHECKING
@@ -43,40 +44,40 @@ paths:
                         - CREDIT_CARD
                       example: "CHECKING"
                     currency:
+                      title: Currency
                       type: string
                       example: "USD"
+
   /accounts/{account_number}/transactions:
     get:
-      summary: Retrieve transaction history for a specific account.
-      security:
-      - OAuth2: []
+      summary: Retrieve the transaction history for a specific account within a date range.
       parameters:
       - name: account_number
         in: path
+        description: The account number for which to retrieve transactions.
         required: true
-        description: The account number to fetch transactions for.
         schema:
           type: string
-          example: "123456789"
+          example: "1234567890"
       - name: start_date
         in: query
+        description: The start date of the transaction history to retrieve (YYYY-MM-DD).
         required: true
-        description: Start date for transaction history in YYYY-MM-DD format.
         schema:
           type: string
           format: date
           example: "2023-01-01"
       - name: end_date
         in: query
+        description: The end date of the transaction history to retrieve (YYYY-MM-DD).
         required: true
-        description: End date for transaction history in YYYY-MM-DD format.
         schema:
           type: string
           format: date
           example: "2023-01-31"
       responses:
         "200":
-          description: Transaction history successfully retrieved
+          description: Transactions successfully retrieved
           content:
             application/json:
               schema:
@@ -86,39 +87,44 @@ paths:
                   type: object
                   properties:
                     transaction_id:
+                      title: Transaction ID
                       type: string
                       example: "TRX123456"
                     date:
+                      title: Transaction Date
                       type: string
                       format: date-time
                       example: "2023-01-15T10:30:00Z"
                     description:
+                      title: Transaction Description
                       type: string
-                      example: "Payment to XYZ Retail"
+                      example: "Payment to ABC Retail"
                     amount:
+                      title: Transaction Amount
                       type: number
                       format: float
                       example: -100.00
                     balance_after:
+                      title: Balance After Transaction
                       type: number
                       format: float
                       example: 1500.00
                     currency:
+                      title: Currency
                       type: string
                       example: "USD"
+
   /accounts/{account_number}/balance:
     get:
       summary: Retrieve the current balance of a specific account.
-      security:
-      - OAuth2: []
       parameters:
       - name: account_number
         in: path
+        description: The account number for which to retrieve the balance.
         required: true
-        description: The account number to fetch the balance for.
         schema:
           type: string
-          example: "123456789"
+          example: "1234567890"
       responses:
         "200":
           description: Account balance successfully retrieved
@@ -129,53 +135,28 @@ paths:
                 type: object
                 properties:
                   account_number:
+                    title: Account Number
                     type: string
-                    example: "123456789"
+                    example: "1234567890"
                   balance:
+                    title: Current Balance
                     type: number
                     format: float
                     example: 1200.50
                   currency:
+                    title: Currency
                     type: string
                     example: "USD"
 
 components:
   securitySchemes:
-    OAuth2:
-      type: oauth2
-      flows:
-        authorizationCode:
-          authorizationUrl: https://auth.globalbank.com/oauth2/authorize
-          tokenUrl: https://auth.globalbank.com/oauth2/token
-          scopes:
-            read: Access to view account details, balances, and transactions
-      x-ibm-oauth-provider: https://auth.globalbank.com/oauth2
+    clientID:
+      type: apiKey
+      name: X-IBM-Client-Id
+      in: header
 
 x-ibm-configuration:
-  cors:
-    enabled: true
-  gateway: datapower-api-gateway
-  type: rest
-  enforced: true
-  assembly:
-    execute:
-    - invoke:
-        title: account lookup
-        target-url: $(target-url)
-        timeout: 60
-        version: 2.2.0
-    - invoke:
-        title: transaction lookup
-        target-url: $(target-url)/transactions
-        timeout: 60
-        version: 2.2.0
-    - invoke:
-        title: balance lookup
-        target-url: $(target-url)/balance
-        timeout: 60
-        version: 2.2.0
-  testable: true
-  activity-log:
-    enabled: true
-    success-content: activity
-    error-content: payload
+  properties:
+    target-url:
+      value: "https://api.globalbank.com/accounts"
+      description: URL of the 
