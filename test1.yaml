@@ -149,6 +149,7 @@ components:
           tokenUrl: https://auth.globalbank.com/oauth2/token
           scopes:
             read: Access to view account details, balances, and transactions
+      x-ibm-oauth-provider: https://auth.globalbank.com/oauth2
 
 x-ibm-configuration:
   cors:
@@ -162,14 +163,17 @@ x-ibm-configuration:
         title: account lookup
         target-url: $(target-url)
         timeout: 60
+        version: 2.2.0  # Updated version to a supported version
     - invoke:
         title: transaction lookup
         target-url: $(target-url)/transactions
         timeout: 60
+        version: 2.2.0  # Updated version to a supported version
     - invoke:
         title: balance lookup
         target-url: $(target-url)/balance
         timeout: 60
+        version: 2.2.0  # Updated version to a supported version
   testable: true
   activity-log:
     enabled: true
