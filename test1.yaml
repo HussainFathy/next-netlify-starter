@@ -2,14 +2,14 @@ openapi: 3.0.1
 info:
   title: GlobalBank Account API
   description: Securely view account balances and transaction history for GlobalBank customers.
-  termsOfService: https://github.com/globalbank/api-terms
+  termsOfService: https://www.globalbank.com/terms
   contact:
-    name: GlobalBank Corporation
-    url: https://www.globalbank.com/products/api-connect
+    name: GlobalBank Support
+    url: https://www.globalbank.com/support
   version: 1.0.0
   x-ibm-name: globalbank-account-api
 externalDocs:
-  description: "Github project for this API, containing source code and deployment pipeline"
+  description: "GitHub project for this API, containing source code and deployment pipeline"
   url: https://github.com/globalbank/api-docs
 servers:
 - url: /banking/v1
@@ -47,10 +47,9 @@ paths:
                       title: Currency
                       type: string
                       example: "USD"
-
   /accounts/{account_number}/transactions:
     get:
-      summary: Retrieve the transaction history for a specific account within a date range.
+      summary: Retrieve transaction history for a specific account within a date range.
       parameters:
       - name: account_number
         in: path
@@ -61,7 +60,7 @@ paths:
           example: "1234567890"
       - name: start_date
         in: query
-        description: The start date of the transaction history to retrieve (YYYY-MM-DD).
+        description: Start date for the transaction history in YYYY-MM-DD format.
         required: true
         schema:
           type: string
@@ -69,7 +68,7 @@ paths:
           example: "2023-01-01"
       - name: end_date
         in: query
-        description: The end date of the transaction history to retrieve (YYYY-MM-DD).
+        description: End date for the transaction history in YYYY-MM-DD format.
         required: true
         schema:
           type: string
@@ -98,7 +97,7 @@ paths:
                     description:
                       title: Transaction Description
                       type: string
-                      example: "Payment to ABC Retail"
+                      example: "Payment to XYZ Retail"
                     amount:
                       title: Transaction Amount
                       type: number
@@ -113,7 +112,6 @@ paths:
                       title: Currency
                       type: string
                       example: "USD"
-
   /accounts/{account_number}/balance:
     get:
       summary: Retrieve the current balance of a specific account.
@@ -147,16 +145,99 @@ paths:
                     title: Currency
                     type: string
                     example: "USD"
-
 components:
   securitySchemes:
     clientID:
       type: apiKey
       name: X-IBM-Client-Id
       in: header
-
 x-ibm-configuration:
   properties:
     target-url:
       value: "https://raw.githubusercontent.com/HussainFathy/next-netlify-starter/main/data.json"
-      description: URL of the 
+      description: URL to retrieve account and transaction data from GitHub
+      encoded: false
+  cors:
+    enabled: true
+  gateway: datapower-api-gateway
+  type: rest
+  phase: realized
+  enforced: true
+  testable: true
+  assembly:
+    execute:
+    - invoke:
+        title: account lookup
+        version: 2.0.0
+        target-url: $(target-url)
+        follow-redirects: false
+        timeout: 60
+        parameter-control:
+          type: blocklist
+          values: []
+        header-control:
+          type: blocklist
+          values: []
+        inject-proxy-headers: true
+        persistent-connection: true
+        backend-type: json
+        output: account
+        description: Retrieve account data from the GitHub data source.
+    - parse:
+        version: 2.1.0
+        title: parse response
+        parse-settings-reference:
+          default: apic-default-parsesettings
+        input: account
+        output: account
+        description: Parse the JSON from the GitHub data source.
+    - map:
+        version: 2.0.0
+        title: map input to lambda
+        inputs:
+          input:
+            schema:
+              type: object
+              properties:
+                account_number:
+                  type: string
+                  name: account_number
+                transaction_history:
+                  type: array
+                  name: transaction_history
+            variable: account.body
+        outputs:
+          output:
+            schema:
+              type: object
+              properties:
+                transactions:
+                  type: array
+                  name: transactions
+            variable: message.body
+            content: application/json
+        actions:
+        - set: output.transactions
+          from: input.transaction_history
+    - invoke:
+        version: 2.2.0
+        title: transaction lookup
+        backend-type: detect
+        header-control:
+          type: blocklist
+          values: []
+        parameter-control:
+          type: allowlist
+          values: []
+        http-version: HTTP/1.1
+        timeout: 60
+        verb: POST
+        persistent-connection: true
+        target-url: $(target-url)/transactions
+        output: transactions
+        description: Retrieve transaction history from the data source.
+    finally: []
+  activity-log:
+    enabled: true
+    success-content: activity
+    error-content: payload
