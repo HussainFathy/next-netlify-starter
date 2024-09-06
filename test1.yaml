@@ -130,7 +130,7 @@ components:
   securitySchemes:
     clientID:
       type: apiKey
-      name: X-Client-Id
+      name: X-IBM-Client-Id
       in: header
 x-ibm-configuration:
   properties:
