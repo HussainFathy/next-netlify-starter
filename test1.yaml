@@ -149,6 +149,7 @@ components:
           tokenUrl: https://auth.globalbank.com/oauth2/token
           scopes:
             read: Access to view account details, balances, and transactions
+      x-ibm-oauth-provider: https://auth.globalbank.com/oauth2
 
 x-ibm-configuration:
   cors:
