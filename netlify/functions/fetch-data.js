@@ -16,11 +16,15 @@ exports.handler = async function(event, context) {
   // Split the cleaned path
   const pathParts = cleanedPath.split('/');
 
-  // Ensure path structure has the correct number of parts (4 segments: "", "accounts", "{account_number}", "balance")
-  if (pathParts.length !== 4) {
+  // Return the full cleaned path and its parts for debugging
+  if (pathParts.length < 4) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Invalid path structure', path_received: cleanedPath }),
+      body: JSON.stringify({
+        error: 'Invalid path structure',
+        path_received: cleanedPath,         // The full path being processed
+        path_parts: pathParts               // The individual parts of the path
+      }),
     };
   }
 
@@ -32,19 +36,24 @@ exports.handler = async function(event, context) {
   if (endpoint !== 'balance') {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Invalid endpoint', endpoint_received: endpoint })
+      body: JSON.stringify({
+        error: 'Invalid endpoint',
+        endpoint_received: endpoint,
+        fullPath: cleanedPath,
+        pathParts: pathParts
+      })
     };
   }
 
-  // Debugging response to confirm the structure
+  // Return the path and parts to confirm they are correct
   return {
     statusCode: 200,
     body: JSON.stringify({
       message: 'Debugging response',
       accountNumber: accountNumber,
       endpoint: endpoint,
-      fullPath: cleanedPath,
-      pathParts: pathParts
+      fullPath: cleanedPath,                // The full path after cleaning
+      pathParts: pathParts                  // The split path parts
     }),
   };
 
