@@ -11,28 +11,34 @@ exports.handler = async function(event, context) {
   // Split the path and check the structure
   const pathParts = path.split('/');
 
-  // Validate path parts for debugging
-  const accountNumber = pathParts[6]; // Corrected for account number
-  const endpoint = pathParts[7]; // Corrected for endpoint (balance or transactions)
+  // Check the length of pathParts to avoid incorrect indexing
+  if (pathParts.length < 8) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Invalid path structure', path_received: path }),
+    };
+  }
 
-  // Log received values for debugging
-  console.log(`Received account_number: ${accountNumber}, endpoint: ${endpoint}`);
+  // Capture the account number and endpoint correctly based on the URL structure
+  const accountNumber = pathParts[6]; // Account number should be in the 6th position
+  const endpoint = pathParts[7]; // The endpoint (balance or transactions) should be in the 7th position
 
-  // If account_number is missing or invalid, return an error
+  // Return the account number and endpoint received for debugging
   if (!accountNumber || !endpoint) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Invalid account number or endpoint', account_received: accountNumber }),
+      body: JSON.stringify({ error: 'Invalid account number or endpoint', account_received: accountNumber, endpoint_received: endpoint }),
     };
   }
 
   // Find the specific account from the fetched data
   const account = data.accounts.find(acc => acc.account_number === accountNumber);
 
+  // If account is not found, return the account number and the endpoint
   if (!account) {
     return {
       statusCode: 404,
-      body: JSON.stringify({ error: 'Account not found', account_received: accountNumber }),
+      body: JSON.stringify({ error: 'Account not found', account_received: accountNumber, endpoint_received: endpoint }),
     };
   }
 
