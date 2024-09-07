@@ -8,27 +8,31 @@ exports.handler = async function(event, context) {
   const response = await fetch('https://raw.githubusercontent.com/HussainFathy/next-netlify-starter/main/data.json');
   const data = await response.json();
 
-  // Extract the path and parameters
+  // Split the path and check the structure
   const pathParts = path.split('/');
-  const accountNumber = pathParts[6]; // Adjusted index to match the correct structure
-  const endpoint = pathParts[7]; // Adjusted for correct endpoint (balance or transactions)
 
-  // If it's the /accounts endpoint (no account number provided), return the list of all accounts
-  if (pathParts[5] === 'accounts' && !accountNumber) {
+  // Validate path parts for debugging
+  const accountNumber = pathParts[6]; // Corrected for account number
+  const endpoint = pathParts[7]; // Corrected for endpoint (balance or transactions)
+
+  // Log received values for debugging
+  console.log(`Received account_number: ${accountNumber}, endpoint: ${endpoint}`);
+
+  // If account_number is missing or invalid, return an error
+  if (!accountNumber || !endpoint) {
     return {
-      statusCode: 200,
-      body: JSON.stringify(data.accounts),
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Invalid account number or endpoint', account_received: accountNumber }),
     };
   }
 
-  // Find the specific account
+  // Find the specific account from the fetched data
   const account = data.accounts.find(acc => acc.account_number === accountNumber);
 
-  // If account is not found, return the account number along with an error message
   if (!account) {
     return {
       statusCode: 404,
-      body: JSON.stringify({ error: `Account not found`, account_received: accountNumber }),
+      body: JSON.stringify({ error: 'Account not found', account_received: accountNumber }),
     };
   }
 
