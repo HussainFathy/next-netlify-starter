@@ -1,0 +1,64 @@
+openapi: 3.0.1
+info:
+  title: 2-GlobalBank Account API
+  description: Securely view account balances for GlobalBank customers.
+  version: 1.0.0
+paths:
+  /accounts/{account_number}/balance:
+    get:
+      summary: Retrieve the current balance of a specific account.
+      parameters:
+      - name: account_number
+        in: path
+        description: The account number for which to retrieve the balance.
+        required: true
+        schema:
+          type: string
+          example: "1234567890"
+      responses:
+        "200":
+          description: Account balance successfully retrieved
+          content:
+            application/json:
+              schema:
+                title: Account Balance
+                type: object
+                properties:
+                  account_number:
+                    title: Account Number
+                    type: string
+                    example: "1234567890"
+                  balance:
+                    title: Current Balance
+                    type: number
+                    format: float
+                    example: 1200.50
+                  currency:
+                    title: Currency
+                    type: string
+                    example: "USD"
+components:
+  securitySchemes:
+    clientID:
+      type: apiKey
+      name: X-IBM-Client-Id
+      in: header
+x-ibm-configuration:
+  properties:
+    target-url:
+      value: "https://main--lighthearted-torrone-3976db.netlify.app/.netlify/functions/fetch-data"
+  gateway: datapower-api-gateway
+  type: rest
+  assembly:
+    execute:
+    - invoke:
+        title: "Get Account Balance"
+        target-url: $(target-url)/accounts/{account_number}/balance
+        verb: GET
+        timeout: 60
+        output: balance
+    finally: []
+  activity-log:
+    enabled: true
+    success-content: activity
+    error-content: payload
