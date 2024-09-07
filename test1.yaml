@@ -19,7 +19,6 @@ paths:
   /accounts:
     get:
       summary: Retrieve the list of accounts associated with the authenticated user.
-      parameters: []
       responses:
         "200":
           description: Accounts successfully retrieved
@@ -58,22 +57,6 @@ paths:
         schema:
           type: string
           example: "1234567890"
-      - name: start_date
-        in: query
-        description: Start date for the transaction history in YYYY-MM-DD format.
-        required: true
-        schema:
-          type: string
-          format: date
-          example: "2023-01-01"
-      - name: end_date
-        in: query
-        description: End date for the transaction history in YYYY-MM-DD format.
-        required: true
-        schema:
-          type: string
-          format: date
-          example: "2023-01-31"
       responses:
         "200":
           description: Transactions successfully retrieved
@@ -177,71 +160,6 @@ x-ibm-configuration:
         persistent-connection: true
         backend-type: json
         output: balance
-    - parse:
-        title: parse balance response
-        version: 2.1.0
-        input: balance
-        output: balance
-        description: Parse the JSON balance data to ensure it is in the correct format.
-    - map:
-        title: map balance response
-        version: 2.0.0
-        inputs:
-          input:
-            schema:
-              type: object
-              properties:
-                balance:
-                  type: number
-                currency:
-                  type: string
-            variable: balance.body
-        outputs:
-          output:
-            schema:
-              type: object
-              properties:
-                account_number:
-                  type: string
-                balance:
-                  type: number
-                currency:
-                  type: string
-            variable: message.body
-    - invoke:
-        title: transaction lookup
-        version: 2.0.0
-        target-url: $(target-url)/accounts/{account_number}/transactions
-        follow-redirects: false
-        timeout: 60
-        persistent-connection: true
-        backend-type: json
-        output: transactions
-    - parse:
-        title: parse transactions response
-        version: 2.1.0
-        input: transactions
-        output: transactions
-        description: Parse the JSON transaction data to ensure it is in the correct format.
-    - map:
-        title: map transactions response
-        version: 2.0.0
-        inputs:
-          input:
-            schema:
-              type: object
-              properties:
-                transactions:
-                  type: array
-            variable: transactions.body
-        outputs:
-          output:
-            schema:
-              type: object
-              properties:
-                transactions:
-                  type: array
-            variable: message.body
     finally: []
   activity-log:
     enabled: true
