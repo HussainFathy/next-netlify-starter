@@ -8,20 +8,23 @@ exports.handler = async function(event, context) {
   const response = await fetch('https://raw.githubusercontent.com/HussainFathy/next-netlify-starter/main/data.json');
   const data = await response.json();
 
-  // Split the path and check the structure
-  const pathParts = path.split('/');
+  // Correct the path for Netlify-specific paths (remove "/.netlify/functions/fetch-data")
+  const cleanedPath = path.replace('/.netlify/functions/fetch-data', '');
 
-  // Check the length of pathParts to avoid incorrect indexing
-  if (pathParts.length < 8) {
+  // Split the cleaned path
+  const pathParts = cleanedPath.split('/');
+
+  // Check if pathParts contain enough segments
+  if (pathParts.length < 4) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Invalid path structure', path_received: path }),
+      body: JSON.stringify({ error: 'Invalid path structure', path_received: cleanedPath }),
     };
   }
 
-  // Capture the account number and endpoint correctly based on the URL structure
-  const accountNumber = pathParts[6]; // Account number should be in the 6th position
-  const endpoint = pathParts[7]; // The endpoint (balance or transactions) should be in the 7th position
+  // Correct the account number and endpoint indices after cleaning the path
+  const accountNumber = pathParts[2]; // The account number should now be at index 2
+  const endpoint = pathParts[3]; // The endpoint (balance or transactions) should now be at index 3
 
   // Return the account number and endpoint received for debugging
   if (!accountNumber || !endpoint) {
