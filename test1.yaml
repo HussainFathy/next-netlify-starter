@@ -175,7 +175,6 @@ x-ibm-configuration:
         persistent-connection: true
         backend-type: json
         output: balance
-        finally: []
     - invoke:
         title: transaction lookup
         version: 2.0.0
