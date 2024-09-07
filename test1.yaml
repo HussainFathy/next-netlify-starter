@@ -229,27 +229,41 @@ x-ibm-configuration:
         - set: output.currency
           from: input.currency
     - invoke:
-    version: 2.2.0
-    title: "lambda: get balance"
-    backend-type: detect
-    http-version: HTTP/1.1
-    timeout: 60
-    verb: GET
-    persistent-connection: true
-    target-url: $(target-url)/accounts/{account_number}/balance
-    output: balance
-    description: Retrieves the current balance for the account.
-- invoke:
-    version: 2.2.0
-    title: "lambda: get transactions"
-    backend-type: detect
-    http-version: HTTP/1.1
-    timeout: 60
-    verb: GET
-    persistent-connection: true
-    target-url: $(target-url)/accounts/{account_number}/transactions
-    output: transactions
-    description: Retrieves the transaction history for the account.
+        version: 2.2.0
+        title: "lambda: get balance"
+        backend-type: detect
+        header-control:
+          type: blocklist
+          values: []
+        parameter-control:
+          type: allowlist
+          values: []
+        http-version: HTTP/1.1
+        timeout: 60
+        verb: GET
+        persistent-connection: true
+        target-url: $(target-url)/accounts/{account_number}/balance
+        output: balance
+        description: Retrieves the balance for the specified account.
+
+    - invoke:
+        version: 2.2.0
+        title: "lambda: get transactions"
+        backend-type: detect
+        header-control:
+          type: blocklist
+          values: []
+        parameter-control:
+          type: allowlist
+          values: []
+        http-version: HTTP/1.1
+        timeout: 60
+        verb: GET
+        persistent-connection: true
+        target-url: $(target-url)/accounts/{account_number}/transactions
+        output: transactions
+        description: Retrieves the transaction history for the specified account.
+        
     - map:
         version: 2.0.0
         title: combine data for response
