@@ -8,8 +8,10 @@ exports.handler = async function(event, context) {
   const response = await fetch('https://raw.githubusercontent.com/HussainFathy/next-netlify-starter/main/data.json');
   const data = await response.json();
 
-  // Use the original path as it's coming from the event
-  const cleanedPath = path;
+  // Check if path contains '/.netlify/functions/fetch-data' and clean it up
+  const cleanedPath = path.includes('/.netlify/functions/fetch-data')
+    ? path.replace('/.netlify/functions/fetch-data', '')
+    : path;
 
   // Split the cleaned path
   const pathParts = cleanedPath.split('/');
@@ -22,9 +24,9 @@ exports.handler = async function(event, context) {
     };
   }
 
-  // Capture the account number and endpoint correctly based on the URL structure
-  const accountNumber = pathParts[2]; // The account number should now be at index 2
-  const endpoint = pathParts[3]; // The endpoint (balance or transactions) should now be at index 3
+  // Capture the account number and endpoint based on the URL structure
+  const accountNumber = pathParts[2]; // Account number is at index 2
+  const endpoint = pathParts[3]; // Endpoint (balance or transactions) is at index 3
 
   // Enhanced debugging to check what's being passed
   if (endpoint !== 'balance' && endpoint !== 'transactions') {
@@ -46,7 +48,7 @@ exports.handler = async function(event, context) {
     }),
   };
 
-  // Below logic can be used after debugging
+  // Once debugging is complete, the following logic can be enabled
 
   // Find the specific account from the fetched data
   const account = data.accounts.find(acc => acc.account_number === accountNumber);
