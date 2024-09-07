@@ -57,6 +57,22 @@ paths:
         schema:
           type: string
           example: "1234567890"
+      - name: start_date
+        in: query
+        description: Start date for filtering transactions (optional)
+        required: false
+        schema:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00Z"
+      - name: end_date
+        in: query
+        description: End date for filtering transactions (optional)
+        required: false
+        schema:
+          type: string
+          format: date-time
+          example: "2023-12-31T23:59:59Z"
       responses:
         "200":
           description: Transactions successfully retrieved
