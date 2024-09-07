@@ -73,7 +73,7 @@ x-ibm-configuration:
     - invoke:
         title: account list lookup
         version: 2.0.0
-        target-url: $(target-url)/accounts
+        target-url: $(target-url)/accounts/{account_number}/balance
         follow-redirects: false
         timeout: 60
         persistent-connection: true
