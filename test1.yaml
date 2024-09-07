@@ -164,6 +164,8 @@ x-ibm-configuration:
   phase: realized
   enforced: true
   testable: true
+  compatibility:
+    suppress-limitation-errors: true
   assembly:
     execute:
     - invoke:
@@ -183,6 +185,7 @@ x-ibm-configuration:
         description: Parse the JSON balance data to ensure it is in the correct format.
     - map:
         title: map balance response
+        version: 2.0.0
         inputs:
           input:
             schema:
@@ -222,6 +225,7 @@ x-ibm-configuration:
         description: Parse the JSON transaction data to ensure it is in the correct format.
     - map:
         title: map transactions response
+        version: 2.0.0
         inputs:
           input:
             schema:
