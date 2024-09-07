@@ -87,7 +87,14 @@ x-ibm-configuration:
         target-url: $(target-url)/accounts/{account_number}/balance
         output: balance
         description: Retrieves the balance for the specified account.
-        
+    
+    # Print the raw output from the invoke step
+    - log:
+        version: 1.0.0
+        title: "Log raw balance response"
+        message: | 
+          Raw balance response: $(balance)
+    
     - map:
         version: 2.0.0
         title: combine data for response
