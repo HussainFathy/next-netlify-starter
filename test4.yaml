@@ -18,7 +18,7 @@ security:
 paths:
   /accounts/{account_number}/transactions:
     get:
-      summary: Retrieve the transactions of a specific account.
+      summary: Retrieve the current transactions of a specific account.
       parameters:
         - name: account_number
           in: path
@@ -82,7 +82,7 @@ components:
 x-ibm-configuration:
   properties:
     target-url:
-      value: "https://main--lighthearted-torrone-3976db.netlify.app/.netlify/functions/fetch-data"
+      value: "http://41.45.24.239/"
       description: URL to retrieve account transaction data from Netlify
       encoded: false
   cors:
