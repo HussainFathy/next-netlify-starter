@@ -10,11 +10,11 @@ exports.handler = async function(event, context) {
 
   // Extract the path and parameters
   const pathParts = path.split('/');
-  const accountNumber = pathParts[5]; // Path like /accounts/{account_number}
-  const endpoint = pathParts[6]; // e.g., 'balance' or 'transactions'
+  const accountNumber = pathParts[6]; // Correcting index to match the path structure
+  const endpoint = pathParts[7]; // Adjusting to get the correct endpoint (balance or transactions)
 
   // If it's the /accounts endpoint (no account number provided), return the list of all accounts
-  if (pathParts[3] === 'accounts' && !accountNumber) {
+  if (pathParts[5] === 'accounts' && !accountNumber) {
     return {
       statusCode: 200,
       body: JSON.stringify(data.accounts),
