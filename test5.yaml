@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: transactions-GlobalBank Account API
-  description: Securely view account transactions for GlobalBank customers.
+  description: Securely view account balances for GlobalBank customers.
   termsOfService: https://www.globalbank.com/terms
   contact:
     name: GlobalBank Support
@@ -18,61 +18,37 @@ security:
 paths:
   /accounts/{account_number}/transactions:
     get:
-      summary: Retrieve the current transactions of a specific account.
+      summary: Retrieve the current balance of a specific account.
       parameters:
         - name: account_number
           in: path
-          description: The account number for which to retrieve the transactions.
+          description: The account number for which to retrieve the balance.
           required: true
           schema:
             type: string
             example: "1234567890"
       responses:
         "200":
-          description: Account transactions successfully retrieved
+          description: Account balance successfully retrieved
           content:
             application/json:
               schema:
-                title: Account Transactions
+                title: Account Balance
                 type: object
                 properties:
                   account_number:
                     title: Account Number
                     type: string
                     example: "1234567890"
-                  transactions:
-                    title: List of Transactions
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        transaction_id:
-                          title: Transaction ID
-                          type: string
-                          example: "TRX123456"
-                        date:
-                          title: Transaction Date
-                          type: string
-                          format: date-time
-                          example: "2023-01-15T10:30:00Z"
-                        description:
-                          title: Description
-                          type: string
-                          example: "Payment to ABC Retail"
-                        amount:
-                          title: Amount
-                          type: number
-                          format: float
-                          example: -100.00
-                        balance_after:
-                          title: Balance After Transaction
-                          type: number
-                          format: float
-                          example: 1100.50
-                        currency:
-                          title: Currency
-                          type: string
-                          example: "USD"
+                  balance:
+                    title: Current Balance
+                    type: number
+                    format: float
+                    example: 1200.50
+                  currency:
+                    title: Currency
+                    type: string
+                    example: "USD"
 components:
   securitySchemes:
     clientID:
@@ -82,8 +58,8 @@ components:
 x-ibm-configuration:
   properties:
     target-url:
-      value: "http://41.45.24.239/"
-      description: URL to retrieve account transaction data from Netlify
+      value: "https://main--lighthearted-torrone-3976db.netlify.app/.netlify/functions/fetch-data"
+      description: URL to retrieve account transactions data from Netlify
       encoded: false
   cors:
     enabled: true
@@ -159,7 +135,7 @@ x-ibm-configuration:
           from: input.currency
     - invoke:
         version: 2.2.0
-        title: "lambda: get balance"
+        title: "lambda: get transactions"
         backend-type: detect
         header-control:
           type: blocklist
@@ -171,20 +147,50 @@ x-ibm-configuration:
         timeout: 60
         verb: GET
         persistent-connection: true
-        target-url: $(target-url)/accounts/{account_number}/balance
+        target-url: $(target-url)/accounts/{account_number}/transactions
         output: balance
         description: Retrieves the balance for the specified account.
 
     - map:
-        title: account transactions lookup
         version: 2.0.0
-        target-url: $(target-url)/accounts/{account_number}/transactions
-        follow-redirects: false
-        timeout: 60
-        persistent-connection: true
-        backend-type: json
-        output: transactions
-        description: Retrieves the list of transactions associated with the user.
+        title: combine data for response
+        inputs:
+          accounts:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  account_number:
+                    type: string
+                    name: account_number
+                  balance:
+                    type: number
+                    name: balance
+                  currency:
+                    type: string
+                    name: currency
+            variable: accounts.body
+        outputs:
+          output:
+            schema:
+              type: object
+              properties:
+                accounts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      account_number:
+                        type: string
+                      balance:
+                        type: number
+                      currency:
+                        type: string
+            variable: message.body
+        actions:
+        - set: output.accounts
+          from: accounts
     finally: []
   activity-log:
     enabled: true
