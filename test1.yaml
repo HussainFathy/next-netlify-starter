@@ -147,21 +147,172 @@ x-ibm-configuration:
   phase: realized
   enforced: true
   testable: true
-  compatibility:
-    suppress-limitation-errors: true
   assembly:
     execute:
     - invoke:
-        title: account balance lookup
+        title: account list lookup
         version: 2.0.0
-        target-url: $(target-url)/accounts/{account_number}/balance
+        target-url: $(target-url)/accounts
         follow-redirects: false
         timeout: 60
         persistent-connection: true
         backend-type: json
-        output: balance
+        output: accounts
+        description: Retrieves the list of accounts associated with the user.
+    - parse:
+        version: 2.1.0
+        title: parse account list
+        parse-settings-reference:
+          default: apic-default-parsesettings
+        input: accounts
+        output: accounts
+        description: Parse the JSON from the account service so that the values can be used later in the flow.
+    - map:
+        version: 2.0.0
+        title: map input to accounts
+        inputs:
+          input:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  account_number:
+                    type: string
+                    name: account_number
+                  account_type:
+                    type: string
+                    name: account_type
+                  currency:
+                    type: string
+                    name: currency
+            variable: accounts.body
+        outputs:
+          output:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  account_number:
+                    type: string
+                    name: account_number
+                  account_type:
+                    type: string
+                    name: account_type
+                  currency:
+                    type: string
+                    name: currency
+            variable: message.body
+            content: application/json
+        actions:
+        - set: output.account_number
+          from: input.account_number
+        - set: output.account_type
+          from: input.account_type
+        - set: output.currency
+          from: input.currency
+    - invoke:
+        version: 2.2.0
+        title: "lambda: get transactions"
+        backend-type: detect
+        header-control:
+          type: blocklist
+          values: []
+        parameter-control:
+          type: allowlist
+          values: []
+        http-version: HTTP/1.1
+        timeout: 60
+        verb: GET
+        chunked-uploads: true
+        persistent-connection: true
+        cache-response: protocol
+        cache-ttl: 900
+        stop-on-error: []
+        websocket-upgrade: false
+        target-url: $(target-url)/accounts/{account_number}/transactions
+        output: transactions
+        graphql-send-type: detect
+        description: Retrieves the transaction history for a specific account within the provided date range.
+    - map:
+        version: 2.0.0
+        title: combine data for response
+        inputs:
+          transactions:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  transaction_id:
+                    type: string
+                    name: transaction_id
+                  date:
+                    type: string
+                    name: date
+                  description:
+                    type: string
+                    name: description
+                  amount:
+                    type: number
+                    name: amount
+                  balance_after:
+                    type: number
+                    name: balance_after
+            variable: transactions.body
+          accounts:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  account_number:
+                    type: string
+                    name: account_number
+                  account_type:
+                    type: string
+                    name: account_type
+                  currency:
+                    type: string
+                    name: currency
+            variable: accounts.body
+        outputs:
+          output:
+            schema:
+              type: object
+              properties:
+                accounts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      account_number:
+                        type: string
+                      transactions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            transaction_id:
+                              type: string
+                            date:
+                              type: string
+                            description:
+                              type: string
+                            amount:
+                              type: number
+                            balance_after:
+                              type: number
+            variable: message.body
+        actions:
+        - set: output.accounts
+          from: accounts
+        - set: output.transactions
+          from: transactions
     finally: []
   activity-log:
     enabled: true
     success-content: activity
     error-content: payload
+x-original-swagger-version: "2.0"
