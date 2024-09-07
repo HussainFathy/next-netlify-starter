@@ -1,13 +1,13 @@
 openapi: 3.0.1
 info:
-  title: balance-GlobalBank Account API
+  title: balance - GlobalBank Account API
   description: Securely view account balances for GlobalBank customers.
   termsOfService: https://www.globalbank.com/terms
   contact:
     name: GlobalBank Support
     url: https://www.globalbank.com/support
-  version: 3.0.0
-  x-ibm-name: balance-globalbank-account-api
+  version: 1.0.0
+  x-ibm-name: balance - globalbank-account-api
 externalDocs:
   description: "GitHub project for this API, containing source code and deployment pipeline"
   url: https://github.com/globalbank/api-docs
