@@ -8,29 +8,30 @@ exports.handler = async function(event, context) {
   const response = await fetch('https://raw.githubusercontent.com/HussainFathy/next-netlify-starter/main/data.json');
   const data = await response.json();
 
-  // Debug: Return the original path received by the backend (before any cleaning)
-  if (!path) {
+  // Debug: Return the original path received by the backend (no cleaning)
+  const pathParts = path.split('/');
+
+  // Hardcoded path handling for debugging
+  if (path === "/accounts/1234567890/balance") {
     return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Path is missing in the request' }),
+      statusCode: 200,
+      body: JSON.stringify({
+        message: "Hardcoded path matched",
+        accountNumber: "1234567890",
+        balance: "1200.50",
+        currency: "USD"
+      }),
     };
   }
-
-  // Log the full path for debugging
-  const cleanedPath = path.includes('/.netlify/functions/fetch-data')
-    ? path.replace('/.netlify/functions/fetch-data', '')
-    : path;
-
-  const pathParts = cleanedPath.split('/');
 
   // Return the full path and path parts for better debugging
   return {
     statusCode: 400,
     body: JSON.stringify({
       error: 'Invalid path structure',
-      path_received: cleanedPath,
+      path_received: path,
       path_parts: pathParts,
-      message: 'The path is too short. Expected something like /accounts/{account_number}/balance'
+      message: 'Expected path structure like /accounts/{account_number}/balance'
     }),
   };
 };
