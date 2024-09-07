@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: transactions-GlobalBank Account API
-  description: Retrieve account transactions for a GlobalBank customer.
+  description: Securely view account transactions for GlobalBank customers.
   termsOfService: https://www.globalbank.com/terms
   contact:
     name: GlobalBank Support
@@ -18,7 +18,7 @@ security:
 paths:
   /accounts/{account_number}/transactions:
     get:
-      summary: Retrieve the list of transactions for a specific account.
+      summary: Retrieve the transactions of a specific account.
       parameters:
         - name: account_number
           in: path
@@ -47,24 +47,30 @@ paths:
                       type: object
                       properties:
                         transaction_id:
+                          title: Transaction ID
                           type: string
                           example: "TRX123456"
                         date:
+                          title: Transaction Date
                           type: string
                           format: date-time
                           example: "2023-01-15T10:30:00Z"
                         description:
+                          title: Description
                           type: string
                           example: "Payment to ABC Retail"
                         amount:
+                          title: Amount
                           type: number
                           format: float
                           example: -100.00
                         balance_after:
+                          title: Balance After Transaction
                           type: number
                           format: float
                           example: 1100.50
                         currency:
+                          title: Currency
                           type: string
                           example: "USD"
 components:
