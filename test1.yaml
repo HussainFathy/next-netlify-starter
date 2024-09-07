@@ -233,7 +233,6 @@ x-ibm-configuration:
         websocket-upgrade: false
         target-url: $(target-url)/accounts/{account_number}/transactions
         output: transactions
-        graphql-send-type: detect
         description: Retrieves the transaction history for a specific account within the provided date range.
     - map:
         version: 2.0.0
