@@ -6,7 +6,7 @@ info:
   contact:
     name: GlobalBank Support
     url: https://www.globalbank.com/support
-  version: 1.0.0
+  version: 3.0.0
   x-ibm-name: balance-globalbank-account-api
 externalDocs:
   description: "GitHub project for this API, containing source code and deployment pipeline"
