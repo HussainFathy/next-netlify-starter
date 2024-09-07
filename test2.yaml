@@ -1,8 +1,20 @@
 openapi: 3.0.1
 info:
-  title: 2-GlobalBank Account API
-  description: Securely view account balances for GlobalBank customers.
+  title: GlobalBank Account API
+  description: Securely view account balances and transaction history for GlobalBank customers.
+  termsOfService: https://www.globalbank.com/terms
+  contact:
+    name: GlobalBank Support
+    url: https://www.globalbank.com/support
   version: 1.0.0
+  x-ibm-name: globalbank-account-api
+externalDocs:
+  description: "GitHub project for this API, containing source code and deployment pipeline"
+  url: https://github.com/globalbank/api-docs
+servers:
+- url: /banking/v1
+security:
+- clientID: []
 paths:
   /accounts/{account_number}/balance:
     get:
@@ -14,7 +26,6 @@ paths:
         required: true
         schema:
           type: string
-          example: "1234567890"
       responses:
         "200":
           description: Account balance successfully retrieved
@@ -47,18 +58,72 @@ x-ibm-configuration:
   properties:
     target-url:
       value: "https://main--lighthearted-torrone-3976db.netlify.app/.netlify/functions/fetch-data"
+      description: URL to retrieve account and transaction data from Netlify
+      encoded: false
+  cors:
+    enabled: true
   gateway: datapower-api-gateway
   type: rest
+  phase: realized
+  enforced: true
+  testable: true
   assembly:
     execute:
     - invoke:
-        title: "Get Account Balance"
-        target-url: $(target-url)/accounts/{account_number}/balance
+        title: account balance lookup
+        version: 2.0.0  # Use the compatible invoke version
         verb: GET
+        target-url: $(target-url)/accounts/{account_number}/balance
+        follow-redirects: false
         timeout: 60
+        persistent-connection: true
+        backend-type: json
         output: balance
+        description: Retrieves account balance data from the backend.
+    - parse:
+        version: 2.1.0
+        title: parse balance response
+        parse-settings-reference:
+          default: apic-default-parsesettings
+        input: balance
+        output: balance
+        description: Parse the JSON response from the account balance service.
+    - map:
+        version: 2.0.0
+        title: map balance data
+        inputs:
+          input:
+            schema:
+              type: object
+              properties:
+                balance:
+                  type: number
+                  name: balance
+                currency:
+                  type: string
+                  name: currency
+            variable: balance.body
+        outputs:
+          output:
+            schema:
+              type: object
+              properties:
+                balance:
+                  type: number
+                  name: balance
+                currency:
+                  type: string
+                  name: currency
+            variable: message.body
+            content: application/json
+        actions:
+        - set: output.balance
+          from: input.balance
+        - set: output.currency
+          from: input.currency
     finally: []
   activity-log:
     enabled: true
     success-content: activity
     error-content: payload
+x-original-swagger-version: "2.0"
