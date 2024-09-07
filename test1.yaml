@@ -155,7 +155,7 @@ x-ibm-configuration:
   properties:
     target-url:
       value: "https://main--lighthearted-torrone-3976db.netlify.app/.netlify/functions/fetch-data"
-      description: URL to retrieve account and transaction data from GitHub
+      description: URL to retrieve account and transaction data from Netlify
       encoded: false
   cors:
     enabled: true
@@ -175,6 +175,36 @@ x-ibm-configuration:
         persistent-connection: true
         backend-type: json
         output: balance
+    - parse:
+        title: parse balance response
+        version: 2.1.0
+        input: balance
+        output: balance
+        description: Parse the JSON balance data to ensure it is in the correct format.
+    - map:
+        title: map balance response
+        inputs:
+          input:
+            schema:
+              type: object
+              properties:
+                balance:
+                  type: number
+                currency:
+                  type: string
+            variable: balance.body
+        outputs:
+          output:
+            schema:
+              type: object
+              properties:
+                account_number:
+                  type: string
+                balance:
+                  type: number
+                currency:
+                  type: string
+            variable: message.body
     - invoke:
         title: transaction lookup
         version: 2.0.0
@@ -184,6 +214,30 @@ x-ibm-configuration:
         persistent-connection: true
         backend-type: json
         output: transactions
+    - parse:
+        title: parse transactions response
+        version: 2.1.0
+        input: transactions
+        output: transactions
+        description: Parse the JSON transaction data to ensure it is in the correct format.
+    - map:
+        title: map transactions response
+        inputs:
+          input:
+            schema:
+              type: object
+              properties:
+                transactions:
+                  type: array
+            variable: transactions.body
+        outputs:
+          output:
+            schema:
+              type: object
+              properties:
+                transactions:
+                  type: array
+            variable: message.body
     finally: []
   activity-log:
     enabled: true
