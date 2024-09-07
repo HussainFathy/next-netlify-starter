@@ -10,8 +10,8 @@ exports.handler = async function(event, context) {
 
   // Extract the path and parameters
   const pathParts = path.split('/');
-  const accountNumber = pathParts[6]; // Correcting index to match the path structure
-  const endpoint = pathParts[7]; // Adjusting to get the correct endpoint (balance or transactions)
+  const accountNumber = pathParts[6]; // Adjusted index to match the correct structure
+  const endpoint = pathParts[7]; // Adjusted for correct endpoint (balance or transactions)
 
   // If it's the /accounts endpoint (no account number provided), return the list of all accounts
   if (pathParts[5] === 'accounts' && !accountNumber) {
@@ -24,10 +24,11 @@ exports.handler = async function(event, context) {
   // Find the specific account
   const account = data.accounts.find(acc => acc.account_number === accountNumber);
 
+  // If account is not found, return the account number along with an error message
   if (!account) {
     return {
       statusCode: 404,
-      body: JSON.stringify({ error: 'Account not found' }),
+      body: JSON.stringify({ error: `Account not found`, account_received: accountNumber }),
     };
   }
 
