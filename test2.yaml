@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: balance - GlobalBank Account API
+  title: balance-GlobalBank Account API
   description: Securely view account balances for GlobalBank customers.
   termsOfService: https://www.globalbank.com/terms
   contact:
